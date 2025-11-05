@@ -26,25 +26,40 @@ st.write(t("Welcome! Upload your wall layout to begin.",
            "Dobrodošli! Učitajte raspored zida da započnete."))
 
 uploaded_file = st.file_uploader(
-    t("Upload wall plan image", "Učitaj sliku plana zida"), type=["jpg", "png"]
+    t("Upload wall plan image", "Učitaj sliku plana zida"),
+    type=["jpg", "jpeg", "png", "pdf"]
+
 )
 if uploaded_file:
     import tempfile
-    from pdf2image import convert_from_bytes
+    import os
 
-    # Provera tipa fajla (da li je PDF ili slika)
+    # Ako je PDF -> renderuj prvu stranicu u PNG preko PyMuPDF
     if uploaded_file.type == "application/pdf":
-        st.info("📄 PDF file detected — converting to image...")
-        images = convert_from_bytes(uploaded_file.read())
+        try:
+            import fitz  # PyMuPDF
+        except ImportError:
+            st.error("Missing dependency 'pymupdf'. Add 'pymupdf' to requirements.txt and reboot the app.")
+            st.stop()
+
+        pdf_bytes = uploaded_file.read()
+        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+        page = doc.load_page(0)              # prva stranica
+        pix = page.get_pixmap(dpi=200)       # dovoljno kvalitetno za analizu
         temp_path = "converted_wall.png"
-        images[0].save(temp_path, "PNG")
+        pix.save(temp_path)
+        display_image_path = temp_path
+
     else:
+        # JPG/PNG putanja
         temp_path = "uploaded_wall.png"
         with open(temp_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
+        display_image_path = temp_path
 
-    st.image(uploaded_file, caption=t("Uploaded wall plan", "Učitani plan zida"), use_column_width=True)
+    st.image(display_image_path, caption=t("Uploaded wall plan", "Učitani plan zida"), use_column_width=True)
     st.success(t("File uploaded successfully!", "Datoteka uspešno učitana!"))
+
 
 
 # simulacija rasporeda zida — placeholder podaci
