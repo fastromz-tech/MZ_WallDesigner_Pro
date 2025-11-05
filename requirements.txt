@@ -4,6 +4,8 @@ matplotlib
 Pillow
 plotly
 streamlit
-opencv-python
 pytesseract
 numpy
+opencv-python-headless
+pytesseract
+Pillow
