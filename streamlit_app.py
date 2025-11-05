@@ -42,4 +42,9 @@ layout_data = [
 
 draw_wall_2d(layout_data)
 
+from viewer3d import draw_wall_3d
+draw_wall_3d(layout_data)
+
+
+
 
