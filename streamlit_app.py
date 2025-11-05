@@ -31,4 +31,6 @@ uploaded_file = st.file_uploader(
 if uploaded_file:
     st.image(uploaded_file, caption=t("Uploaded wall plan", "Učitani plan zida"), use_column_width=True)
     st.success(t("File uploaded successfully!", "Datoteka uspešno učitana!"))
+    from viewer2D import display_2d_layout
+    display_2d_layout(uploaded_file)
 
