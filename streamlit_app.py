@@ -34,13 +34,28 @@ if uploaded_file:
     from viewer2d import draw_wall_2d
 
 # simulacija rasporeda zida — placeholder podaci
-layout_data = [
-    {"x": 0, "y": 0, "w": 125, "h": 25, "type": "Block"},
-    {"x": 125, "y": 0, "w": 100, "h": 25, "type": "Corner"},
-    {"x": 225, "y": 0, "w": 125, "h": 25, "type": "HalfBlock"}
-]
+from wall_analyzer import extract_wall_data
 
-draw_wall_2d(layout_data)
+if uploaded_file:
+    # Sačuvaj privremeno sliku
+    temp_path = "uploaded_wall.jpg"
+    with open(temp_path, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+
+    # Analiza zida pomoću AI-a
+    st.info("🔍 Analyzing wall layout, please wait...")
+    layout_data = extract_wall_data(temp_path)
+
+    if layout_data:
+        st.success("✅ Wall dimensions successfully detected!")
+        from viewer2d import draw_wall_2d
+        draw_wall_2d(layout_data)
+
+        from viewer3d import draw_wall_3d
+        draw_wall_3d(layout_data)
+    else:
+        st.error("⚠️ Could not detect wall structure. Please check image quality.")
+
 
 from viewer3d import draw_wall_3d
 draw_wall_3d(layout_data)
