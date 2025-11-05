@@ -29,22 +29,23 @@ uploaded_file = st.file_uploader(
     t("Upload wall plan image", "Učitaj sliku plana zida"), type=["jpg", "png"]
 )
 if uploaded_file:
-import tempfile
-from pdf2image import convert_from_bytes
-# Provera tipa fajla (da li je PDF ili slika)
-if uploaded_file.type == "application/pdf":
-    st.info("📄 PDF file detected — converting to image...")
-    images = convert_from_bytes(uploaded_file.read())
-    temp_path = "converted_wall.png"
-    images[0].save(temp_path, "PNG")
-else:
-    temp_path = "uploaded_wall.png"
-    with open(temp_path, "wb") as f:
-        f.write(uploaded_file.getbuffer())
+    import tempfile
+    from pdf2image import convert_from_bytes
+
+    # Provera tipa fajla (da li je PDF ili slika)
+    if uploaded_file.type == "application/pdf":
+        st.info("📄 PDF file detected — converting to image...")
+        images = convert_from_bytes(uploaded_file.read())
+        temp_path = "converted_wall.png"
+        images[0].save(temp_path, "PNG")
+    else:
+        temp_path = "uploaded_wall.png"
+        with open(temp_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
 
     st.image(uploaded_file, caption=t("Uploaded wall plan", "Učitani plan zida"), use_column_width=True)
     st.success(t("File uploaded successfully!", "Datoteka uspešno učitana!"))
-    from viewer2d import draw_wall_2d
+
 
 # simulacija rasporeda zida — placeholder podaci
 from wall_analyzer import extract_wall_data
