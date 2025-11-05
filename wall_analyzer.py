@@ -3,48 +3,35 @@ import pytesseract
 import numpy as np
 import re
 
-# Glavna funkcija za ekstrakciju dimenzija iz slike zida
 def extract_wall_data(image_path):
-    """
-    Analizira plan zida i vraća listu blokova sa dimenzijama.
-    Vraća listu u formatu pogodnom za viewer2d/viewer3d.
-    """
-    try:
-        # Učitavanje slike
-        img = cv2.imread(image_path)
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (3, 3), 0)
+    import cv2
+    import numpy as np
 
-        # Detekcija ivica (linije zida)
-        edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+    # Učitaj sliku u sivoj skali
+    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        return None
 
-        # Detekcija linija Hough transformacijom
-        lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=100, minLineLength=80, maxLineGap=10)
+    # Poboljšaj kontrast
+    img = cv2.equalizeHist(img)
 
-        # Prepoznavanje teksta (brojevi dimenzija)
-        text = pytesseract.image_to_string(gray)
-        numbers = re.findall(r"\d{2,4}", text)  # brojevi od 2 do 4 cifre
+    # Blagi blur da ukloni šum
+    blurred = cv2.GaussianBlur(img, (5, 5), 0)
 
-        # Osnovna pretpostavka: širine blokova su redom brojevi sa slike
-        layout_data = []
-        x_pos = 0
-        height = 25  # visina bloka u cm (standard)
-        block_types = ["Block", "Corner", "HalfBlock", "Ugaoni", "Modul"]
+    # Automatsko podešavanje praga za ivice
+    edges = cv2.Canny(blurred, 30, 120)
 
-        for i, n in enumerate(numbers):
-            width = int(n)
-            block_type = block_types[i % len(block_types)]
-            layout_data.append({
-                "x": x_pos,
-                "y": 0,
-                "w": width,
-                "h": height,
-                "type": block_type
-            })
-            x_pos += width
+    # Pronalaženje kontura
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        return layout_data
+    wall_data = []
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        # Uzimamo samo veće oblike (da ignorišemo oznake, tekst, male brojeve)
+        if w > 50 and h > 15:
+            wall_data.append({"x": int(x), "y": int(y), "w": int(w), "h": int(h), "type": "Block"})
 
-    except Exception as e:
-        print("❌ Greška u analizi zida:", e)
-        return []
+    if not wall_data:
+        return None
+
+    return wall_data
