@@ -57,8 +57,6 @@ if uploaded_file:
         st.error("⚠️ Could not detect wall structure. Please check image quality.")
 
 
-from viewer3d import draw_wall_3d
-draw_wall_3d(layout_data)
 
 
 
