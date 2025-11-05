@@ -31,6 +31,15 @@ uploaded_file = st.file_uploader(
 if uploaded_file:
     st.image(uploaded_file, caption=t("Uploaded wall plan", "Učitani plan zida"), use_column_width=True)
     st.success(t("File uploaded successfully!", "Datoteka uspešno učitana!"))
-    from viewer2D import display_2d_layout
-    display_2d_layout(uploaded_file)
+    from viewer2d import draw_wall_2d
+
+# simulacija rasporeda zida — placeholder podaci
+layout_data = [
+    {"x": 0, "y": 0, "w": 125, "h": 25, "type": "Block"},
+    {"x": 125, "y": 0, "w": 100, "h": 25, "type": "Corner"},
+    {"x": 225, "y": 0, "w": 125, "h": 25, "type": "HalfBlock"}
+]
+
+draw_wall_2d(layout_data)
+
 
