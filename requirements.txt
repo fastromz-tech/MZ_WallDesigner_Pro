@@ -4,3 +4,6 @@ matplotlib
 Pillow
 plotly
 streamlit
+opencv-python
+pytesseract
+numpy
