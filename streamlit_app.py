@@ -94,7 +94,7 @@ if uploaded_file:
         draw_wall_3d(layout_data)
 
         if show_debug and dbg:
-            with st.expander("Debug: computer vision steps", expanded=False):
+            with st.expander("Debug: computer vision steps", expanded=True):
                 for key in sorted(dbg.keys()):
                     st.image(dbg[key], caption=key, use_column_width=True)
     else:
