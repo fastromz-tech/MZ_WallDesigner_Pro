@@ -1,14 +1,9 @@
 streamlit
-pandas
-matplotlib
-Pillow
-plotly
-streamlit
-pytesseract
-numpy
 opencv-python-headless
+numpy
 pytesseract
-Pillow
 pdf2image
-pymupdf
-pip install -r requirements.txt
+Pillow
+matplotlib
+plotly
+
