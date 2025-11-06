@@ -85,20 +85,24 @@ if uploaded_file:
         dbg = {}
 
     if layout_data:
-        st.success("✅ Wall structure detected.")
-        # 2D prikaz
-        from viewer2d import draw_wall_2d
-        draw_wall_2d(layout_data)
-        # 3D prikaz
-        from viewer3d import draw_wall_3d
-        draw_wall_3d(layout_data)
+    st.success("✅ Wall structure detected.")
 
-        if show_debug and dbg:
-            with st.expander("Debug: computer vision steps", expanded=True):
-                for key in sorted(dbg.keys()):
-                    st.image(dbg[key], caption=key, use_column_width=True)
-    else:
-        st.error("⚠️ Could not detect wall structure. Please check image quality.")
+    # 2D prikaz
+    from viewer2d import draw_wall_2d
+    draw_wall_2d(layout_data)
+
+    # 3D prikaz
+    from viewer3d import draw_wall_3d
+    draw_wall_3d(layout_data)
+else:
+    st.error("⚠️ Could not detect wall structure. Please check image quality.")
+
+# Debug slike uvek prikaži, čak i ako nije pronađen zid
+if show_debug and dbg:
+    with st.expander("🧩 Debug: computer vision steps", expanded=True):
+        for key in sorted(dbg.keys()):
+            st.image(dbg[key], caption=key, use_column_width=True)
+
   
 
 
