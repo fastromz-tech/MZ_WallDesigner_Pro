@@ -11,3 +11,4 @@ pytesseract
 Pillow
 pdf2image
 pymupdf
+pip install -r requirements.txt
