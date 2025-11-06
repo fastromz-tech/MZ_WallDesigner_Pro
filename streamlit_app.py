@@ -71,20 +71,35 @@ if uploaded_file:
     with open(temp_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
-    # Analiza zida pomoću AI-a
-    st.info("🔍 Analyzing wall layout, please wait...")
-    layout_data = extract_wall_data(temp_path)
+ # === Analysis section ===
+# Prikaži internu analizu (debug)
+show_debug = st.sidebar.checkbox("Show debug images", value=True)
+
+if uploaded_file:
+    # ovde već imaš kod za temp_path (ostavi ga)
+    if show_debug:
+        result = extract_wall_data(temp_path, return_debug=True)
+        layout_data, dbg = result if isinstance(result, tuple) else (result, {})
+    else:
+        layout_data = extract_wall_data(temp_path)
+        dbg = {}
 
     if layout_data:
-        st.success("✅ Wall dimensions successfully detected!")
+        st.success("✅ Wall structure detected.")
+        # 2D prikaz
         from viewer2d import draw_wall_2d
         draw_wall_2d(layout_data)
-
+        # 3D prikaz
         from viewer3d import draw_wall_3d
         draw_wall_3d(layout_data)
+
+        if show_debug and dbg:
+            with st.expander("Debug: computer vision steps", expanded=False):
+                for key in sorted(dbg.keys()):
+                    st.image(dbg[key], caption=key, use_column_width=True)
     else:
         st.error("⚠️ Could not detect wall structure. Please check image quality.")
-
+  
 
 
 
